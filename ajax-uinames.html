@@ -39,6 +39,10 @@
                                 $('#users').append('<li>' + user.name + ' ' + user.surname + '</li>');
                             }
                         }
+                    },
+                    error: function(data)   {
+                        console.log('There is something wrong!!!!');
+                        console.log(data);
                     }
                 })
                 $('#amount').val('');
