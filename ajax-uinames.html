@@ -12,24 +12,72 @@
     <h1>UInames example</h1>
 
     <h2>Users</h2>
+    <div>
+        <label>Male</label>
+        <input type="radio" name="gender" id="male">
+        <label>Female</label>
+        <input type="radio" name="gender" id="female">
+        <label>Random</label>
+        <input type="radio" name="gender" id="random">
+    </div>
+    <div>
+        <label for="region">Region</label>
+        <select name="region" id="region">
+            <option>None</option>
+            <option>France</option>
+            <option>Germany</option>
+            <option>India</option>
+            <option>Russia</option>
+            <option>Mexico</option>
+            <option>Random</option>
+        </select>
+    </div>
+    <div>
+        <label>Data extra</label>
+        <input type="checkbox" id="extra">
+    </div>
     <input type="number" id="amount" placeholder="How many users?">
     <ul id="users">
     </ul>
+    <p class="errors"></p>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
     <script>
+        var gender = "";
+        $('input[type=radio]').on('click', function(){
+            gender = $(this).attr('id');
+        });
         $('#amount').on('keypress', function (event) {
             if (event.which === 13) {
                 $('#users').html('');
+                $('.errors').html('');
+                var amount = $('#amount').val();
+                $('#amount').val('');
+                var region = $('#region').val();
+                var urlString = "https://uinames.com/api/?amount=" + amount 
+                    + "&gender=" + gender 
+                    + "&region=" + region;
+                var extra = $('#extra').prop('checked');
+                if (extra)    {
+                    urlString += "&ext";
+                    // Mostrar la edad, correo y su foto de perfil
+                }
                 jQuery.ajax({
                     method: "GET",
-                    url: "https://uinames.com/api/?amount=" + $('#amount').val() + "&region=mexico",
+                    url: urlString,
                     success: function (data) {
-                        //                console.log(data);
-                        if ($('#amount').val() == 1)    {
-                            $('#users').append('<li>' + data.name + ' ' + data.surname + '</li>');
+                        debugger;
+                        if (amount == 1)    {
+                            if (extra)  {
+                                $('#users').append('<li>' + data.name + ' ' + data.surname 
+                                + '<img src="' + data.photo + '">' + '</li>');
+
+                            }
+                            else    {
+                                $('#users').append('<li>' + data.name + ' ' + data.surname + '</li>');
+                            }
                         }
                         else    {
                             var i, user;
@@ -41,11 +89,11 @@
                         }
                     },
                     error: function(data)   {
-                        console.log('There is something wrong!!!!');
-                        console.log(data);
+                        $('.errors').text(data.responseJSON.error);
+                        $('.errors').css('color','red');
                     }
                 })
-                $('#amount').val('');
+
             }
         });
     </script>
